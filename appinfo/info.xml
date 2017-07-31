@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<info>
+    <id>cors</id>
+    <name>CORS</name>
+    <description>Application for storing user whitelisted domains for CORS </description>
+    <licence>AGPL</licence>
+    <author>Noveen Sachdeva</author>
+    <version>0.1.0</version>
+    <namespace>CORS</namespace>
+    <category>integration</category>
+    <dependencies>
+        <owncloud min-version="10.0" max-version="10.0"/>
+    </dependencies>
+    <types>
+        <authentication/>
+    </types>
+    <settings>
+        <personal>OCA\CORS\Panels\PersonalPanel</personal>
+    </settings>
+</info>

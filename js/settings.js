@@ -1,6 +1,5 @@
 /**
- * @author Project Seminar "sciebo@Learnweb" of the University of Muenster
- * @copyright Copyright (c) 2017, University of Muenster
+ * @author Noveen Sachdeva "noveen.sachdeva@research.iiit.ac.in"
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -17,14 +16,5 @@
  */
 
 $(document).ready(function () {
-	var elements = document.querySelectorAll('.delete');
-
-	for (var i = 0; i < elements.length; i++) {
-		elements[i].addEventListener('submit', function () {
-			event.preventDefault();
-			if (confirm(this.getAttribute('data-confirm'))) {
-				this.submit();
-			}
-		}, false);
-	}
+	// Nothing needed
 });

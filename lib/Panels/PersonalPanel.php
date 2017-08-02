@@ -1,7 +1,6 @@
 <?php
 /**
- * @author Project Seminar "sciebo@Learnweb" of the University of Muenster
- * @copyright Copyright (c) 2017, University of Muenster
+ * @author Noveen Sachdeva "noveen.sachdeva@research.iiit.ac.in"
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -54,13 +53,14 @@ class PersonalPanel implements ISettings {
 		$userId = $this->userSession->getUser()->getUID();
 		$domainsSet = \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains');
 		if ($domainsSet == '') {
+			// 0 passes the is_empty() check
 			$domains = 0;
 		} else {
 			$domains = explode(",", $domainsSet);
 		}
 		$t = new Template('cors', 'settings-personal');
 		$t->assign('user_id', $userId);
-		$t->assign('domains', array_filter($domains));
+		$t->assign('domains', $domains);
 		$t->assign('urlGenerator', $this->urlGenerator);
 		return $t;
 	}

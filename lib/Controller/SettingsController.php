@@ -1,7 +1,6 @@
 <?php
 /**
- * @author Project Seminar "sciebo@Learnweb" of the University of Muenster
- * @copyright Copyright (c) 2017, University of Muenster
+ * @author Noveen Sachdeva "noveen.sachdeva@research.iiit.ac.in"
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -36,7 +35,7 @@ class SettingsController extends Controller {
 
 	/** @var IURLGenerator */
 	private $urlGenerator;
-	
+
 	/** @var string */
 	private $userId;
 
@@ -58,7 +57,7 @@ class SettingsController extends Controller {
 		$this->logger = $logger;
 		$this->urlGenerator = $urlGenerator;
 	}
-	
+
 	/**
 	 * Gets all White-listed domains
 	 *
@@ -67,11 +66,12 @@ class SettingsController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function getDomains() {
-		$domains = \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains');
+		$userId = $this->userId;
+		$domains = explode(",", \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains'));
 
 		return new JSONResponse($domains);
 	}
-	
+
 	/**
 	 * WhiteLists a domain for CORS
 	 *
@@ -94,12 +94,19 @@ class SettingsController extends Controller {
 					['sectionid' => 'security']
 				) . '#cors');
 		}
-		
+
 		$userId = $this->userId;
-		$domains = \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains');
-		\OC::$server->getConfig()->setUserValue($userId, 'cors', 'domains', $domains . ',' . $_POST['domain']);
+		$domains = explode(",", \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains'));
+		$domains = array_filter($domains);
+		array_push($domains, $_POST['domain']);
+		// In case same domain is added
+		$domains = array_unique($domains);
+		// Store as comma seperated string
+		$domainsString = implode(",", $domains);
+
+		\OC::$server->getConfig()->setUserValue($userId, 'cors', 'domains', $domainsString);
 		$this->logger->info('The domain "' . $_POST['domain'] . '" has been white-listed.', ['app' => 'cors']);
-		
+
 		return new RedirectResponse(
 			$this->urlGenerator->linkToRouteAbsolute(
 				'settings.SettingsPage.getPersonal',
@@ -121,9 +128,9 @@ class SettingsController extends Controller {
 		$userId = $this->userId;
 		$domains = explode(",", \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains'));
 		unset($domains[$id]);
-		
+
 		\OC::$server->getConfig()->setUserValue($userId, 'cors', 'domains', implode(",", $domains));
-		
+
 		return new RedirectResponse(
 			$this->urlGenerator->linkToRouteAbsolute(
 				'settings.SettingsPage.getPersonal',

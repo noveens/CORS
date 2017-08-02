@@ -1,2 +1,2 @@
-oauth2 (0.1.0)
+cors (0.1.0)
 * First release

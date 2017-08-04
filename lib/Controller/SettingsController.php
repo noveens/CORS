@@ -27,6 +27,7 @@ use OCP\ILogger;
 use OCP\IRequest;
 use OCP\IURLGenerator;
 use OCP\IUserSession;
+use OCP\Http\Client\IClient;
 
 class SettingsController extends Controller {
 
@@ -39,6 +40,9 @@ class SettingsController extends Controller {
 	/** @var string */
 	private $userId;
 
+	/** @var IClient */
+	private $httpClient;
+
 	/**
 	 * SettingsController constructor.
 	 *
@@ -50,9 +54,11 @@ class SettingsController extends Controller {
 	public function __construct($AppName, IRequest $request,
 								$UserId,
 								ILogger $logger,
-								IURLGenerator $urlGenerator) {
+								IURLGenerator $urlGenerator,
+								IClient $httpClient = null) {
 		parent::__construct($AppName, $request);
 
+		$this->httpClient = $httpClient;
 		$this->userId = $UserId;
 		$this->logger = $logger;
 		$this->urlGenerator = $urlGenerator;

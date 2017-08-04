@@ -42,6 +42,7 @@ style('cors', 'settings-personal');
                     <td><?php p($domain); ?></td>
                     <td>
                         <form id="form-inline" class="delete" data-confirm="<?php p($l->t('Are you sure you want to remove this domain?')); ?>" action="<?php p($_['urlGenerator']->linkToRoute('cors.settings.removeDomain', ['id' => $id])); ?>" method="post">
+                            <input type="hidden" name="requesttoken" value="<?php p($_['requesttoken']) ?>" />
                             <input type="submit" class="button icon-delete" value="">
                         </form>
                     </td>
@@ -54,6 +55,7 @@ style('cors', 'settings-personal');
     <h3><?php p($l->t('Add Domain')); ?></h3>
     <form action="<?php p($_['urlGenerator']->linkToRoute('cors.settings.addDomain')); ?>" method="post">
 		<input id="domain" name="domain" type="text" placeholder="<?php p($l->t('Domain')); ?>">
-        <input type="submit" class="button" value="<?php p($l->t('Add')); ?>">
+		<input type="hidden" name="requesttoken" value="<?php p($_['requesttoken']) ?>" />
+		<input type="submit" class="button" value="<?php p($l->t('Add')); ?>">
     </form>
 </div>

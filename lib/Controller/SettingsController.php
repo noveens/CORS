@@ -62,8 +62,6 @@ class SettingsController extends Controller {
 	 * Gets all White-listed domains
 	 *
 	 * @return JSONResponse All the White-listed domains
-	 *
-	 * @NoCSRFRequired
 	 */
 	public function getDomains() {
 		$userId = $this->userId;
@@ -76,18 +74,16 @@ class SettingsController extends Controller {
 	 * WhiteLists a domain for CORS
 	 *
 	 * @return RedirectResponse Redirection to the settings page.
-	 *
-	 * @NoCSRFRequired
 	 */
-	public function addDomain() {
-		if (!isset($_POST['domain'])) {
+	public function addDomain($domain) {
+		if (!isset($domain)) {
 			return new RedirectResponse(
 				$this->urlGenerator->linkToRouteAbsolute(
 					'settings.SettingsPage.getPersonal',
 					['sectionid' => 'security']
 				) . '#cors');
 		}
-		if (!Utilities::isValidUrl($_POST['domain'])) {
+		if (!Utilities::isValidUrl($domain)) {
 			return new RedirectResponse(
 				$this->urlGenerator->linkToRouteAbsolute(
 					'settings.SettingsPage.getPersonal',
@@ -98,14 +94,14 @@ class SettingsController extends Controller {
 		$userId = $this->userId;
 		$domains = explode(",", \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains'));
 		$domains = array_filter($domains);
-		array_push($domains, $_POST['domain']);
+		array_push($domains, $domain);
 		// In case same domain is added
 		$domains = array_unique($domains);
 		// Store as comma seperated string
 		$domainsString = implode(",", $domains);
 
 		\OC::$server->getConfig()->setUserValue($userId, 'cors', 'domains', $domainsString);
-		$this->logger->info('The domain "' . $_POST['domain'] . '" has been white-listed.', ['app' => 'cors']);
+		$this->logger->debug('The domain "' . $domain . '" has been white-listed.', ['app' => 'cors']);
 
 		return new RedirectResponse(
 			$this->urlGenerator->linkToRouteAbsolute(
@@ -121,8 +117,6 @@ class SettingsController extends Controller {
 	 * @param string $domain Domain to remove
 	 *
 	 * @return RedirectResponse Redirection to the settings page.
-	 *
-	 * @NoCSRFRequired
 	 */
 	public function removeDomain($id) {
 		$userId = $this->userId;

@@ -22,6 +22,7 @@ use OCP\IURLGenerator;
 use OCP\IUserSession;
 use OCP\Settings\ISettings;
 use OCP\Template;
+use OCP\IConfig;
 
 class PersonalPanel implements ISettings {
 
@@ -35,9 +36,15 @@ class PersonalPanel implements ISettings {
 	 */
 	protected $urlGenerator;
 
+	/** @var IConfig */
+	private $config;
+
 	public function __construct(
 		IUserSession $userSession,
-		IURLGenerator $urlGenerator) {
+		IURLGenerator $urlGenerator,
+		IConfig $config) {
+
+		$this->config = $config;
 		$this->userSession = $userSession;
 		$this->urlGenerator = $urlGenerator;
 	}
@@ -51,7 +58,7 @@ class PersonalPanel implements ISettings {
 	 */
 	public function getPanel() {
 		$userId = $this->userSession->getUser()->getUID();
-		$domainsSet = \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains');
+		$domainsSet = $this->config->getUserValue($userId, 'cors', 'domains');
 		if ($domainsSet == '') {
 			// 0 passes the is_empty() check
 			$domains = 0;

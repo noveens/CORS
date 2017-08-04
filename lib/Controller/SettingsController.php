@@ -27,7 +27,7 @@ use OCP\ILogger;
 use OCP\IRequest;
 use OCP\IURLGenerator;
 use OCP\IUserSession;
-use OCP\Http\Client\IClient;
+use OCP\IConfig;
 
 class SettingsController extends Controller {
 
@@ -40,8 +40,8 @@ class SettingsController extends Controller {
 	/** @var string */
 	private $userId;
 
-	/** @var IClient */
-	private $httpClient;
+	/** @var IConfig */
+	private $config;
 
 	/**
 	 * SettingsController constructor.
@@ -50,15 +50,16 @@ class SettingsController extends Controller {
 	 * @param IRequest $request The request.
 	 * @param ILogger $logger The logger.
 	 * @param IURLGenerator $urlGenerator Use for url generation
+	 * @param IConfig $config
 	 */
 	public function __construct($AppName, IRequest $request,
 								$UserId,
 								ILogger $logger,
 								IURLGenerator $urlGenerator,
-								IClient $httpClient = null) {
+								IConfig $config) {
 		parent::__construct($AppName, $request);
 
-		$this->httpClient = $httpClient;
+		$this->config = $config;
 		$this->userId = $UserId;
 		$this->logger = $logger;
 		$this->urlGenerator = $urlGenerator;
@@ -71,7 +72,7 @@ class SettingsController extends Controller {
 	 */
 	public function getDomains() {
 		$userId = $this->userId;
-		$domains = explode(",", \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains'));
+		$domains = explode(",", $this->config->getUserValue($userId, 'cors', 'domains'));
 
 		return new JSONResponse($domains);
 	}
@@ -98,7 +99,7 @@ class SettingsController extends Controller {
 		}
 
 		$userId = $this->userId;
-		$domains = explode(",", \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains'));
+		$domains = explode(",", $this->config->getUserValue($userId, 'cors', 'domains'));
 		$domains = array_filter($domains);
 		array_push($domains, $domain);
 		// In case same domain is added
@@ -106,7 +107,7 @@ class SettingsController extends Controller {
 		// Store as comma seperated string
 		$domainsString = implode(",", $domains);
 
-		\OC::$server->getConfig()->setUserValue($userId, 'cors', 'domains', $domainsString);
+		$this->config->setUserValue($userId, 'cors', 'domains', $domainsString);
 		$this->logger->debug('The domain "' . $domain . '" has been white-listed.', ['app' => 'cors']);
 
 		return new RedirectResponse(
@@ -126,10 +127,10 @@ class SettingsController extends Controller {
 	 */
 	public function removeDomain($id) {
 		$userId = $this->userId;
-		$domains = explode(",", \OC::$server->getConfig()->getUserValue($userId, 'cors', 'domains'));
+		$domains = explode(",", $this->config->getUserValue($userId, 'cors', 'domains'));
 		unset($domains[$id]);
 
-		\OC::$server->getConfig()->setUserValue($userId, 'cors', 'domains', implode(",", $domains));
+		$this->config->setUserValue($userId, 'cors', 'domains', implode(",", $domains));
 
 		return new RedirectResponse(
 			$this->urlGenerator->linkToRouteAbsolute(
